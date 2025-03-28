@@ -1,0 +1,8 @@
+{
+  "/adm/[id]/page": "app/adm/[id]/page.js",
+  "/formDescricao/[id]/page": "app/formDescricao/[id]/page.js",
+  "/empresa/[id]/page": "app/empresa/[id]/page.js",
+  "/formEmpresa/page": "app/formEmpresa/page.js",
+  "/formCard/[id]/page": "app/formCard/[id]/page.js",
+  "/formLink/[id]/page": "app/formLink/[id]/page.js"
+}
