@@ -1,66 +1,69 @@
-'use client'; // Adicione essa linha no topo do seu arquivo
+'use client';
 
 import { useState } from "react";
 import Image from "next/image";
-import axios from "axios"; // Importando o Axios
+import axios from "axios";
 import styles from "./page.module.css";
 
 export default function Home() {
-  // Definindo estados para o formulário e feedback de erro/sucesso
   const [formData, setFormData] = useState({
     name: "",
-    logo: "",
     description: "",
     subname: "",
     instagram: "",
     linkedin: "",
     whatsapp: "",
     email: "",
+    links: "",
   });
+
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
-  // Função para capturar os dados do formulário
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Função para enviar o formulário com Axios
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Evita que a página seja recarregada ao submeter
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setLogoFile(e.target.files[0]);
+    }
+  };
 
-    setLoading(true); // Inicia o estado de carregamento
-    setError(null); // Reseta o erro
-    setSuccess(false); // Reseta a mensagem de sucesso
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
 
     try {
-      const response = await axios.post("http://localhost:3333/panel", JSON.stringify(formData), {
+      const data = new FormData();
+      // Adiciona todos os campos de texto
+      Object.entries(formData).forEach(([key, value]) => {
+        data.append(key, value);
+      });
+      // Adiciona a imagem
+      if (logoFile) {
+        data.append("logo", logoFile);
+      }
+
+      const response = await axios.post("http://localhost:3333/panel", data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
-      console.log('Resposta da API:', response.data);
+
+      console.log("Resposta da API:", response.data);
       setSuccess(true);
-    } catch (error:any) {
-      console.error("Erro de rede:", error);
-      if (error.response) {
-        console.error("Código de status:", error.response.status);
-        console.error("Dados da resposta:", error.response.data);
-      } else if (error.request) {
-        console.error("Nenhuma resposta recebida:", error.request);
-      } else {
-        console.error("Erro ao configurar a solicitação:", error.message);
-      }
+    } catch (error: any) {
+      console.error("Erro ao enviar:", error);
       setError("Ocorreu um erro ao enviar os dados.");
     } finally {
-      setLoading(false); // Finaliza o carregamento
+      setLoading(false);
     }
-    
   };
 
   return (
@@ -90,12 +93,10 @@ export default function Home() {
           onChange={handleChange}
         />
         <input
-          type="text"
+          type="file"
           name="logo"
-          placeholder="Logo URL"
           className={styles.input}
-          value={formData.logo}
-          onChange={handleChange}
+          onChange={handleFileChange}
         />
         <input
           type="text"
@@ -145,7 +146,14 @@ export default function Home() {
           value={formData.email}
           onChange={handleChange}
         />
-        
+        <input
+          type="text"
+          name="links"
+          placeholder="Links"
+          className={styles.input}
+          value={formData.links}
+          onChange={handleChange}
+        />
         <button className={styles.btn} type="submit" disabled={loading}>
           {loading ? "Enviando..." : "Enviar"}
         </button>

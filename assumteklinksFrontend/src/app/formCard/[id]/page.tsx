@@ -4,7 +4,6 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { useState } from "react";
 import { IdEmpresaComponent } from "@/app/components/IdEmpresaComponent";
-import { handleCreatLink } from "@/app/actions/serverActions";
 
 export default function FormCard() {
   const IdEmpresa = decodeURIComponent(IdEmpresaComponent() as string).trim();
@@ -12,16 +11,45 @@ export default function FormCard() {
   const [link, setLink] = useState<string>("");
   const [titulo, setTitulo] = useState<string>("");
   const [descricao, setDescricao] = useState<string>("");
-  const [imagem, setImagem] = useState<string>("");
-  const [order, setOrder] = useState<number>(1); // Valor inicial padrão é 1
+  const [imagem, setImagem] = useState<File | null>(null);
+  const [order, setOrder] = useState<number>(1);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (!imagem) {
+      alert("Por favor, selecione uma imagem.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("companyId", IdEmpresa);
+    formData.append("title", titulo);
+    formData.append("description", descricao);
+    formData.append("url", link);
+    formData.append("order", String(order));
+    formData.append("icon", imagem); // Aqui vai a imagem real
+
     try {
-      await handleCreatLink(IdEmpresa, titulo, imagem, descricao, link, order);
-      alert('Link criado com sucesso!');
+      const response = await fetch("http://localhost:3333/links", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao enviar o link");
+      }
+
+      alert("Link criado com sucesso!");
+      // Se quiser resetar os campos:
+      setLink("");
+      setTitulo("");
+      setDescricao("");
+      setImagem(null);
+      setOrder(1);
     } catch (error) {
-      alert('Erro ao criar o link.');
+      console.error(error);
+      alert("Erro ao criar o link.");
     }
   };
 
@@ -63,20 +91,24 @@ export default function FormCard() {
           onChange={(e) => setDescricao(e.target.value)}
         />
         <input
-          type="text"
+          type="file"
           name="imagem"
-          placeholder="Imagem"
           className={styles.input}
-          value={imagem}
-          onChange={(e) => setImagem(e.target.value)}
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setImagem(file);
+            }
+          }}
         />
         <input
-          type="number" // Use type="number" para aceitar apenas números
+          type="number"
           name="order"
           placeholder="Ordem"
           className={styles.input}
           value={order}
-          onChange={(e) => setOrder(Number(e.target.value))} // Converta para número
+          onChange={(e) => setOrder(Number(e.target.value))}
         />
         <button className={styles.btn} type="submit">
           Enviar

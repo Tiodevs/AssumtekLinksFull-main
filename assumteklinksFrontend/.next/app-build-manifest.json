@@ -6,11 +6,11 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/page": [
+    "/formCard/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/page.css",
-      "static/chunks/app/page.js"
+      "static/css/app/formCard/[id]/page.css",
+      "static/chunks/app/formCard/[id]/page.js"
     ],
     "/empresa/[id]/page": [
       "static/chunks/webpack.js",
@@ -23,30 +23,6 @@
       "static/chunks/main-app.js",
       "static/css/app/adm/[id]/page.css",
       "static/chunks/app/adm/[id]/page.js"
-    ],
-    "/formDescricao/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/formDescricao/[id]/page.css",
-      "static/chunks/app/formDescricao/[id]/page.js"
-    ],
-    "/formLink/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/formLink/[id]/page.css",
-      "static/chunks/app/formLink/[id]/page.js"
-    ],
-    "/formCard/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/formCard/[id]/page.css",
-      "static/chunks/app/formCard/[id]/page.js"
-    ],
-    "/formEmpresa/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/formEmpresa/page.css",
-      "static/chunks/app/formEmpresa/page.js"
     ]
   }
 }
